@@ -1,0 +1,73 @@
+<aside class="flex flex-col h-full bg-slate-950/80 backdrop-blur">
+  <div class="h-14 flex items-center px-4 border-b border-slate-800">
+    <h2 class="text-sm font-semibold text-slate-200">Chats</h2>
+  </div>
+  <div class="p-3">
+    <div class="relative">
+      <input
+        type="text"
+        (input)="onSearch($event)"
+        placeholder="Search people..."
+        class="w-full bg-slate-900 border-none rounded-lg py-2 pl-9 text-sm text-slate-200 focus:ring-1 focus:ring-slate-700"
+      />
+    </div>
+
+    @if (searchResults().length > 0) {
+      <div
+        class="absolute z-10 w-64 mt-1 bg-slate-900 border border-slate-800 rounded-lg shadow-xl overflow-hidden"
+      >
+        @for (user of searchResults(); track user._id) {
+          <button
+            (click)="selectSearchResult(user)"
+            class="w-full p-2 flex items-center gap-3 hover:bg-slate-800 transition-colors"
+          >
+            <img [src]="user.profilePic || 'default-avatar.png'" class="w-8 h-8 rounded-full" />
+            <span class="text-sm text-slate-200">{{ user.fullName }}</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+  <div class="flex-1 overflow-y-auto p-2 space-y-1">
+    @if (state().usersLoading) {
+      @for (i of skeletonItems; track $index) {
+        <div class="flex items-center gap-3 rounded-lg px-2 py-2 animate-pulse">
+          <div class="h-9 w-9 rounded-full bg-slate-800"></div>
+          <div class="flex-1 space-y-1">
+            <div class="h-3 w-24 rounded bg-slate-800"></div>
+            <div class="h-3 w-32 rounded bg-slate-900"></div>
+          </div>
+        </div>
+      }
+    } @else {
+      @for (user of state().users; track user._id) {
+        <button
+          type="button"
+          (click)="openChat(user._id)"
+          class="w-full flex items-center gap-3 rounded-lg px-2 py-2 text-left hover:bg-slate-900 transition-colors"
+          [ngClass]="{
+            'bg-slate-900/80': state().selectedUserId === user._id,
+          }"
+        >
+          <div
+            class="h-9 w-9 rounded-full bg-slate-800 flex items-center justify-center text-[11px] font-medium uppercase text-slate-200"
+          >
+            {{ initials(user.fullName) }}
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-medium text-slate-100 truncate">
+              {{ user.fullName }}
+            </p>
+            <p class="text-[11px] text-slate-400 truncate">
+              {{ user.updatedAt || 'No messages yet' }}
+            </p>
+          </div>
+        </button>
+      }
+
+      @if (!state().usersLoading && !state().users.length) {
+        <p class="mt-4 text-center text-[11px] text-slate-500">No conversations yet.</p>
+      }
+    }
+  </div>
+</aside>
