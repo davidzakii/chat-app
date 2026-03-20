@@ -22,7 +22,7 @@ export const getUsersForSideBar = async (req, res) => {
   const filteredUsers = await User.find({
     _id: { $in: allIds, $ne: loggedInUserId },
   }).select(
-    "-password -otp -otpExpires -isVerified -__v -profilePicPublicId -googleId -isGoogleUser",
+    "-password -otp -otpExpires -isVerified -__v -profilePicPublicId -googleId -isGoogleUser -resetPasswordExpires -resetPasswordExpires",
   );
 
   res.status(200).json(successResponse(filteredUsers));
