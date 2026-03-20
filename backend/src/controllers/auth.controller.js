@@ -108,7 +108,9 @@ export const login = async (req, res) => {
 export const googleCallback = async (req, res) => {
   const user = req.user;
   if (!user) {
-    return res.redirect("http://localhost:4200/login?error=google");
+    return res.redirect(
+      "https://chat-app-brown-one-38.vercel.app/login?error=google",
+    );
   }
 
   const payload = {
@@ -130,7 +132,7 @@ export const googleCallback = async (req, res) => {
      res.redirect("http://localhost:4200/home")=> correct
   */
   // res.status(200).json(successResponse(null, "User login successfully"));
-  res.redirect("http://localhost:4200/google-login");
+  res.redirect("https://chat-app-brown-one-38.vercel.app/google-login");
 };
 
 export const checkAuth = async (req, res) => {
@@ -166,7 +168,7 @@ export const forgetPassword = async (req, res) => {
   await user.save();
 
   // In production, send this via email using Nodemailer or SendGrid
-  const resetUrl = `http://localhost:4200/reset-password/${resetToken}`;
+  const resetUrl = `https://chat-app-brown-one-38.vercel.app/reset-password/${resetToken}`;
   await sendRestPasswordEmail(email, resetUrl);
   res
     .status(200)

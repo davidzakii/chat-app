@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://cuddly-silvia-webdeveloperog-1baa189a.koyeb.app/api',
+  apiBaseUrl: 'h://cuddly-silvia-webdeveloperog-1baa189a.koyeb.appttps/api',
   apiVersion: 'v1'
 };
