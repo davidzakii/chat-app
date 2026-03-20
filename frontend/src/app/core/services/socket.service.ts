@@ -15,7 +15,7 @@ export class SocketService {
   connect() {
     if (!this.isBrowser || this.socket) return;
     const currentUser = this.auth.state().currentUser;
-    this.socket = io('http://localhost:3000', {
+    this.socket = io('https://cuddly-silvia-webdeveloperog-1baa189a.koyeb.app', {
       withCredentials: true,
       query: {
         userId: currentUser?._id,
