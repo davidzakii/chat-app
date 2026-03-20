@@ -18,7 +18,7 @@ connectDB();
 const PORT = process.env.PORT || 8000;
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: "https://chat-app-brown-one-38.vercel.app",
     credentials: true,
   }),
 );

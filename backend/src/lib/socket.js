@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:4200", // رابط الـ Angular
+    origin: "https://chat-app-brown-one-38.vercel.app", // رابط الـ Angular
     credentials: true,
   },
 });
