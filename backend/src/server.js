@@ -15,7 +15,7 @@ dotenv.config();
 
 connectDB();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8000;
 app.use(
   cors({
     origin: "http://localhost:4200",
@@ -33,6 +33,6 @@ app.use(notFoundError);
 
 app.use(errorHandler);
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });
