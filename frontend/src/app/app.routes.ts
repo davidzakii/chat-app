@@ -32,6 +32,16 @@ export const routes: Routes = [
         path: 'google-login',
         loadComponent: () => import('./features/auth/google-login').then((m) => m.GoogleLogin),
       },
+      {
+        path: 'forgot-password',
+        loadComponent: () =>
+          import('./features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+      },
+      {
+        path: 'reset-password/:token',
+        loadComponent: () =>
+          import('./features/auth/reset-password/reset-password').then((m) => m.ResetPassword),
+      },
     ],
   },
   {
@@ -48,6 +58,10 @@ export const routes: Routes = [
         path: 'chat/:id',
         loadComponent: () =>
           import('./features/chat/chat-shell/chat-shell').then((m) => m.ChatShell),
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/edit-profile/edit-profile').then((m) => m.EditProfile),
       },
     ],
   },

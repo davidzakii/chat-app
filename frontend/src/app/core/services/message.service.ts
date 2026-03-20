@@ -47,6 +47,12 @@ export class MessageService {
           // console.log('رسالة جديدة من مستخدم آخر:', msg.senderId);
         }
       });
+      this.socket.onMessageUpdated((msg) => {
+        this._state.update((s) => ({
+          ...s,
+          messages: s.messages.map((m) => (m._id === msg._id ? msg : m)),
+        }));
+      });
       // this.socket.onNewMessage((msg) => {
       //   const current = this._state();
       //   if (msg.senderId === current.selectedUserId) {
@@ -145,5 +151,34 @@ export class MessageService {
           }));
         }),
       );
+  }
+
+  editMessage(messageId: string, text: string, files: File[]) {
+    const formData = new FormData();
+    formData.append('text', text);
+    for (const file of files) {
+      formData.append('files', file);
+    }
+    return this.api
+      .patch<ApiSuccessResponse<MessageDTO>>(MESSAGE_API.editMessage(messageId), formData)
+      .pipe(
+        tap((message) => {
+          this._state.update((s) => ({
+            ...s,
+            messages: s.messages.map((m) => (m._id === messageId ? message.data : m)),
+          }));
+        }),
+      );
+  }
+
+  deleteMessage(messageId: string) {
+    return this.api.delete<ApiSuccessResponse<null>>(MESSAGE_API.deleteMessage(messageId)).pipe(
+      tap(() => {
+        this._state.update((s) => ({
+          ...s,
+          messages: s.messages.filter((m) => m._id !== messageId),
+        }));
+      }),
+    );
   }
 }

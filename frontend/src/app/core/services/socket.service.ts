@@ -22,10 +22,8 @@ export class SocketService {
       },
     });
 
-    this.socket.on('connect', () => {
-    });
-    this.onlineUsers((users: string[]) => {
-    });
+    this.socket.on('connect', () => {});
+    this.onlineUsers((users: string[]) => {});
   }
 
   onlineUsers(cb: (users: string[]) => void) {
@@ -33,12 +31,15 @@ export class SocketService {
   }
 
   onNewMessage(cb: (msg: MessageDTO) => void) {
-    console.log(cb);
+    this.socket.on('newMessage', cb);
+  }
+
+  onMessageUpdated(cb: (msg: MessageDTO) => void) {
     this.socket.on('newMessage', cb);
   }
 
   onMessageDeleted(cb: (data: { messageId: string }) => void) {
-    this.socket.on('messageDeleted', cb);
+    this.socket.on('messageUpdated', cb);
   }
 
   disconnect() {

@@ -100,6 +100,25 @@ export class AuthService {
     );
   }
 
+  forgotPassword(email: string) {
+    this.setLoading(true);
+    return this.api.post<ApiSuccessResponse<null>>(AUTH_API.forgotPassword, { email }).pipe(
+      tap(() => {
+        this.setLoading(false);
+      }),
+    );
+  }
+  resetPassword(token: string, password: string, confirmPassword: string) {
+    this.setLoading(true);
+    return this.api
+      .post<ApiSuccessResponse<null>>(AUTH_API.resetPassword(token), { password, confirmPassword })
+      .pipe(
+        tap(() => {
+          this.setLoading(false);
+        }),
+      );
+  }
+
   /**
    * Update the current user snapshot (e.g. after profile update).
    */

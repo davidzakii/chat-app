@@ -15,7 +15,7 @@ export class ProfileService {
     const formData = new FormData();
     formData.append('fullName', fullName);
     if (image) {
-      formData.append('files', image);
+      formData.append('profilePic', image);
     }
 
     return this.api.patch<ApiSuccessResponse<UserDTO>>(PROFILE_API.updateProfile, formData).pipe(

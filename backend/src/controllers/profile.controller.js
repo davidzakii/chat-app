@@ -1,7 +1,7 @@
 import cloudinary from "../lib/cloudinary.js";
 import { bufferToStream } from "../middleware/uploadMiddleware.js";
 import User from "../models/user.model.js";
-import { successResponse } from "../utils/api.responses.js";
+import { errorResponse, successResponse } from "../utils/api.responses.js";
 import { AppError } from "../utils/AppError.js";
 
 export const updateProfile = async (req, res, next) => {
@@ -10,6 +10,14 @@ export const updateProfile = async (req, res, next) => {
 
     if (!fullName && !req.file) {
       return next(new AppError("No data provided", 400));
+    }
+    const existUserByFullName = await User.findOne({ fullName });
+    if (existUserByFullName) {
+      return res
+        .status(409)
+        .json(
+          errorResponse("Name already exists, Please enter another name", 409),
+        );
     }
     const user = await User.findById(req.user._id, { password: 0 });
     if (!user) {

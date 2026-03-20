@@ -1,13 +1,17 @@
 <div class="flex-1 flex overflow-hidden">
   <app-sidebar
-    class="flex w-72 border-r border-slate-800"
+    [class.w-72]="!sidebarService.isCollapsed()"
+    [class.w-16]="sidebarService.isCollapsed()"
+    class="flex transition-all duration-300 ease-in-out border-r border-slate-800 overflow-hidden"
   ></app-sidebar>
 
   <div class="flex-1 flex flex-col">
     @if (selectedUserId()) {
-      <app-chat-window class="flex-1 mb-12 h-1vh"></app-chat-window>
+      <app-chat-window class="flex-1 mb-25 min-h-screen"></app-chat-window>
       <app-message-input
-        class="border-t border-slate-800 fixed left-72 right-0 bottom-0 w-[calc(100%-18rem)] bg-slate-900/80 backdrop-blur"
+        [style.left]="sidebarService.isCollapsed() ? '5rem' : '18rem'"
+        [style.width]="sidebarService.isCollapsed() ? 'calc(100% - 5rem)' : 'calc(100% - 18rem)'"
+        class="border-t border-slate-800 fixed bottom-0 bg-slate-900/80 backdrop-blur transition-all duration-300 ease-in-out"
       ></app-message-input>
     } @else {
       <div class="flex-1 flex flex-col items-center justify-center gap-3">

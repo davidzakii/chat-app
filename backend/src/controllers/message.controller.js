@@ -72,9 +72,10 @@ export const sendMessags = async (req, res, next) => {
     // Upload all files in parallel
     const uploadPromises = req.files.map((file) => streamUpload(file.buffer));
     const results = await Promise.all(uploadPromises);
-
+    console.log("Cloudinary upload results:", results); // Debug log to check the upload results
     // Map results to your desired format
     uploadedFiles = results.map((result) => ({
+      name: result.original_filename,
       url: result.secure_url,
       publicId: result.public_id,
     }));
@@ -107,6 +108,10 @@ export const deleteMessage = async (req, res, next) => {
     if (!message) {
       return next(new AppError("Message not found", 404));
     }
+    console.log(message);
+    console.log(message.senderId);
+    console.log(myId);
+
     if (message.senderId.toString() !== myId.toString()) {
       return next(
         new AppError("You are not authorized to delete this message", 403),
@@ -115,7 +120,9 @@ export const deleteMessage = async (req, res, next) => {
     const receiverId = message.receiverId; // نحفظ المعرف قبل الحذف
 
     await Promise.all(
-      message.files.map((f) => cloudinary.uploader.destroy(f.publicId)),
+      message.files.map((f) => {
+        if (f.publicId) cloudinary.uploader.destroy(f.publicId);
+      }),
     );
 
     await Message.deleteOne({ _id: messageId });
@@ -136,8 +143,8 @@ export const editMessage = async (req, res, next) => {
     const { id: messageId } = req.params;
     const { text } = req.body || {};
     const myId = req.user._id;
-    if (!text) {
-      return next(new AppError("No text provided", 400));
+    if (!text && (!req.files || req.files.length === 0)) {
+      return next(new AppError("No data provided", 400));
     }
     const message = await Message.findById(messageId);
 
@@ -148,9 +155,35 @@ export const editMessage = async (req, res, next) => {
       return next(
         new AppError("You are not authorized to edit this message", 403),
       );
+    await Promise.all(
+      message.files.map((f) => cloudinary.uploader.destroy(f.publicId)),
+    );
+    let uploadedFiles = [];
+
+    if (req.files && req.files.length > 0) {
+      const streamUpload = (fileBuffer) =>
+        new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "chatapp" },
+            (error, result) => (error ? reject(error) : resolve(result)),
+          );
+          bufferToStream(fileBuffer).pipe(stream);
+        });
+
+      // Upload all files in parallel
+      const uploadPromises = req.files.map((file) => streamUpload(file.buffer));
+      const results = await Promise.all(uploadPromises);
+      console.log("Cloudinary upload results:", results); // Debug log to check the upload results
+      // Map results to your desired format
+      uploadedFiles = results.map((result) => ({
+        name: result.original_filename,
+        url: result.secure_url,
+        publicId: result.public_id,
+      }));
+    }
     const updatedMessage = await Message.findByIdAndUpdate(
       messageId,
-      { text },
+      { text, files: uploadedFiles },
       { new: true },
     );
     const receiverSocketId = getReceiverSocketId(message.receiverId);

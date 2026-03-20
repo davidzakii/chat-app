@@ -13,6 +13,7 @@ export interface MessageDTO {
 
 export interface MessageAttachmentDTO {
   _id: string;
+  name: string;
   publicId: string;
   url: string;
 }

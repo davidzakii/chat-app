@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
       },
       minlength: 6,
     },
-    fullName: { type: String, required: true },
+    fullName: { type: String, required: true, unique: true },
     profilePic: { type: String, default: "" },
     profilePicPublicId: { type: String, default: "" },
     isVerified: { type: Boolean, default: false },

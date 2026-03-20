@@ -1,0 +1,64 @@
+<div class="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 pt-20 px-4">
+  <div class="max-w-xl mx-auto">
+    <div class="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
+      <h2 class="text-xl font-bold text-slate-100">Edit Profile</h2>
+      <p class="mt-1 text-xs text-slate-400">
+        Update your full name and profile picture while keeping your style.
+      </p>
+
+      <div class="mt-6 flex items-center gap-4">
+        <div
+          class="h-16 w-16 rounded-full overflow-hidden border border-slate-700 bg-slate-900 flex items-center justify-center"
+        >
+          @if (previewUrl) {
+            <img [src]="previewUrl" class="h-full w-full object-cover" />
+          } @else {
+            <span class="text-slate-400 text-xs">No Photo</span>
+          }
+        </div>
+        <label
+          class="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-slate-200 hover:bg-slate-800 cursor-pointer transition-colors"
+        >
+          <input type="file" class="hidden" accept="image/*" (change)="onFileSelected($event)" />
+          Change Photo
+        </label>
+      </div>
+
+      <div class="mt-6 space-y-2">
+        <label class="block text-xs font-medium text-slate-300" for="fullName">
+          Full Name
+        </label>
+        <input
+          id="fullName"
+          name="fullName"
+          type="text"
+          [(ngModel)]="fullName"
+          class="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:border-transparent"
+          placeholder="Enter your full name"
+        />
+        <p class="text-[11px] text-slate-500">
+          Your name should be unique. If it already exists, the server may reject the update.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-600/40 hover:bg-blue-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+        [disabled]="isSaving"
+        (click)="onSave()"
+      >
+        @if (!isSaving) {
+          <span>Save Changes</span>
+        }
+        @if (isSaving) {
+          <span class="flex items-center gap-2">
+            <span
+              class="h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-transparent"
+            ></span>
+            Saving...
+          </span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

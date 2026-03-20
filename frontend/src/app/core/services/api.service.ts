@@ -21,4 +21,7 @@ export class ApiService {
   patch<T>(endpoint: string, body: any) {
     return this.http.patch<T>(this.url(endpoint), body);
   }
+  delete<T>(endpoint: string) {
+    return this.http.delete<T>(this.url(endpoint));
+  }
 }

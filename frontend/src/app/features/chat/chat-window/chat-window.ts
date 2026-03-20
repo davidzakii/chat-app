@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   computed,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
@@ -11,10 +12,13 @@ import {
 import { MessageService } from '../../../core/services/message.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { DatePipe, NgClass } from '@angular/common';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toast } from 'ngx-sonner';
+import { MessageInput } from '../message-input/message-input';
+import { MessageAttachmentDTO } from '../../../core/models/message.model';
 @Component({
   selector: 'app-chat-window',
-  imports: [NgClass, DatePipe],
+  imports: [NgClass, DatePipe, MessageInput],
   templateUrl: './chat-window.html',
   styleUrl: './chat-window.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,11 +27,22 @@ export class ChatWindow {
   private readonly messages = inject(MessageService);
   private readonly auth = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
   isShowImage: boolean = false;
+  isShowDialog: boolean = false;
+  isEditedMessage: boolean = false;
   currentFullImage: string = '';
   readonly messagesState = this.messages.state;
   readonly authState = this.auth.state;
-
+  msgId: string = '';
+  editText: string = '';
+  editFile: MessageAttachmentDTO[] = [];
+  showDialog(id: string, text: string, files: MessageAttachmentDTO[]) {
+    this.msgId = id;
+    this.editText = text;
+    this.editFile = files;
+    this.isShowDialog = !this.isShowDialog;
+  }
   private scrollContainer = viewChild<ElementRef<HTMLDivElement>>('scrollContainer');
 
   private scrollToBottom() {
@@ -110,5 +125,25 @@ export class ChatWindow {
     if (['zip', 'rar', '7z'].includes(ext)) return 'archive';
     if (['doc', 'docx'].includes(ext)) return 'file-edit';
     return 'file';
+  }
+  deleteMessage() {
+    this.messages
+      .deleteMessage(this.msgId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          toast.success('Deleted message success');
+        },
+      });
+  }
+  editMessage() {
+    this.isEditedMessage = true;
+  }
+
+  handleEditCompleted() {
+    this.msgId = '';
+    this.editText = '';
+    this.editFile = [];
+    this.isEditedMessage = false;
   }
 }

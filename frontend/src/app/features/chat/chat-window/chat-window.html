@@ -1,6 +1,8 @@
-<div class="flex flex-col h-full bg-gradient-to-b from-slate-950 to-slate-900 relative">
-  <div
-    class="sticky top-0 z-20 h-14 flex items-center justify-between px-4 border-b border-slate-800/80 w-full"
+<div
+  class="flex flex-col min-h-screen bg-gradient-to-b from-slate-950 to-slate-900 relative top-12"
+>
+  <!-- <div
+    class="sticky top-0 z-20 h-14 flex items-center justify-between px-4 border-b border-slate-800/80 w-1/2"
   >
     <div class="flex items-center gap-3">
       <div
@@ -26,7 +28,7 @@
         </p>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <div class="flex-1 overflow-y-auto px-3 py-3 space-y-4" #scrollContainer>
     @if (messagesState().messagesLoading) {
@@ -38,7 +40,7 @@
       }
     } @else {
       @for (msg of messagesState().messages; track msg._id; let last = $last) {
-        <div class="flex w-full" [id]="last ? 'lastMessage' : ''">
+        <div class="flex w-full mt-5" [id]="last ? 'lastMessage' : ''">
           <div class="flex max-w-[80%] items-end gap-2">
             <!-- Avatar -->
             <div class="flex-shrink-0 mb-1">
@@ -66,7 +68,7 @@
 
             <!-- Bubble -->
             <div
-              class="flex flex-col"
+              class="flex flex-col relative justify-center items-center"
               [ngClass]="{ 'items-end': msg.senderId !== messagesState().selectedUserId }"
             >
               <div
@@ -74,7 +76,7 @@
                 [ngClass]="
                   msg.senderId === messagesState().selectedUserId
                     ? 'bg-slate-800 text-slate-100 rounded-bl-none'
-                    : 'bg-blue-600 text-slate-50 rounded-br-none'
+                    : 'bg-blue-600 text-slate-50 rounded-bl-none'
                 "
               >
                 @if (msg.files?.length) {
@@ -93,7 +95,7 @@
                           class="flex items-center gap-2 p-2 bg-black/20 rounded-lg hover:bg-black/40 transition"
                         >
                           <span class="text-[10px] uppercase font-bold text-blue-200"
-                            >📎 File ({{ getFileExtension(file.url) }})</span
+                            >📎 {{ file.name }}({{ getFileIcon(file.url) }})</span
                           >
                         </a>
                       }
@@ -101,10 +103,32 @@
                   </div>
                 }
 
-                <p class="whitespace-pre-line break-words leading-relaxed">{{ msg.text }}</p>
+                <p class="whitespace-pre-line break-words leading-relaxed">
+                  {{ msg.text }}
+                </p>
                 <p class="mt-1 text-[9px] opacity-60 text-right">
                   {{ msg.createdAt | date: 'shortTime' }}
                 </p>
+                <button
+                  type="button"
+                  class="cursor-pointer absolute top-[5px] right-[-20px]"
+                  (click)="showDialog(msg._id, msg.text, msg.files || [])"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    height="24"
+                    width="24"
+                    preserveAspectRatio="xMidYMid meet"
+                    class=""
+                    fill="currentColor"
+                  >
+                    <title>ic-more-vert</title>
+                    <path
+                      d="M12 20C11.45 20 10.9792 19.8042 10.5875 19.4125C10.1958 19.0208 10 18.55 10 18C10 17.45 10.1958 16.9792 10.5875 16.5875C10.9792 16.1958 11.45 16 12 16C12.55 16 13.0208 16.1958 13.4125 16.5875C13.8042 16.9792 14 17.45 14 18C14 18.55 13.8042 19.0208 13.4125 19.4125C13.0208 19.8042 12.55 20 12 20ZM12 14C11.45 14 10.9792 13.8042 10.5875 13.4125C10.1958 13.0208 10 12.55 10 12C10 11.45 10.1958 10.9792 10.5875 10.5875C10.9792 10.1958 11.45 10 12 10C12.55 10 13.0208 10.1958 13.4125 10.5875C13.8042 10.9792 14 11.45 14 12C14 12.55 13.8042 13.0208 13.4125 13.4125C13.0208 13.8042 12.55 14 12 14ZM12 8C11.45 8 10.9792 7.80417 10.5875 7.4125C10.1958 7.02083 10 6.55 10 6C10 5.45 10.1958 4.97917 10.5875 4.5875C10.9792 4.19583 11.45 4 12 4C12.55 4 13.0208 4.19583 13.4125 4.5875C13.8042 4.97917 14 5.45 14 6C14 6.55 13.8042 7.02083 13.4125 7.4125C13.0208 7.80417 12.55 8 12 8Z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
@@ -125,6 +149,62 @@
       <button class="absolute top-5 right-5 text-white/50 hover:text-white text-4xl transition">
         &times;
       </button>
+    </div>
+  }
+  @if (isShowDialog) {
+    <div
+      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center min-h-screen"
+      (click)="isShowDialog = false"
+    >
+      <div
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl mx-4"
+        (click)="$event.stopPropagation()"
+      >
+        <h3 class="text-xl font-bold text-slate-100 mb-6">Message Options</h3>
+
+        <div class="flex gap-4">
+          <button
+            type="button"
+            class="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-700 cursor-pointer hover:border-indigo-500"
+            (click)="editMessage(); isShowDialog = false"
+          >
+            <span>✏️</span> Edit
+          </button>
+
+          <button
+            type="button"
+            class="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-600 text-slate-300 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 border border-slate-700 hover:border-rose-500 cursor-pointer"
+            (click)="deleteMessage(); isShowDialog = false"
+          >
+            <span>🗑️</span> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+  @if (isEditedMessage) {
+    <div
+      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center min-h-screen"
+    >
+      <div
+        class="relative bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl mx-4"
+        (click)="$event.stopPropagation()"
+      >
+        <h3 class="text-xl font-bold text-slate-100 mb-6">Message Edited</h3>
+
+        <app-message-input
+          [editMsgId]="msgId"
+          [initialText]="editText"
+          [initialFiles]="editFile"
+          (editCompleted)="handleEditCompleted()"
+        ></app-message-input>
+        <button
+          class="absolute cursor-pointer top-5 right-5 text-white/50 hover:text-white text-4xl transition"
+          (click)="handleEditCompleted()"
+        >
+          &times;
+        </button>
+      </div>
     </div>
   }
 </div>

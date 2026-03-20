@@ -1,6 +1,8 @@
 import express from "express";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import {
+  deleteMessage,
+  editMessage,
   getMseeages,
   getUsersForSideBar,
   searchUsers,
@@ -21,5 +23,13 @@ router.post(
   uploadMemoryFiles,
   sendMessags,
 );
+router.patch(
+  "/edit/:id",
+  authMiddleware,
+  requireJson,
+  uploadMemoryFiles,
+  editMessage,
+);
+router.delete("/delete/:id", authMiddleware, deleteMessage);
 
 export default router;

@@ -1,5 +1,6 @@
 import multer from "multer";
 import { Readable } from "stream";
+import { buffer } from "stream/consumers";
 
 export const uploadMemoryProfilePic = multer({
   storage: multer.memoryStorage(),
@@ -7,13 +8,22 @@ export const uploadMemoryProfilePic = multer({
     const allowed = ["image/jpeg", "image/png"];
     if (!allowed.includes(file.mimetype)) {
       return cb(new Error("Only images are allowed"));
-    }
+    } // Debug log to check the received file
     cb(null, true);
   },
 }).single("profilePic");
 
 export const uploadMemoryFiles = multer({
   storage: multer.memoryStorage(),
+  fileFilter: (req, file, cb) => {
+    console.log(
+      "Received file:",
+      file.originalname,
+      "with mimetype:",
+      file.mimetype,
+    );
+    cb(null, true);
+  },
 }).array("files", 10);
 
 // تحويل buffer لـ Readable stream

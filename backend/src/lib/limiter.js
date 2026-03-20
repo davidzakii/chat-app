@@ -7,7 +7,7 @@ export const loginLimiter = rateLimit({
   message: {
     isPass: false,
     data: null,
-    message: "Too many login attempts, please try again later",
+    message: "Too many login attempts, please try again later after 15 minutes",
     status: 429,
   },
 });
@@ -18,7 +18,7 @@ export const signupLimiter = rateLimit({
   message: {
     isPass: false,
     data: null,
-    message: "Too many signup attempts, please try again later",
+    message: "Too many signup attempts, please try again later after 1 hour",
     status: 429,
   },
 });
@@ -30,7 +30,7 @@ export const otpLimiter = rateLimit({
   message: {
     isPass: false,
     data: null,
-    message: "Too many OTP requests, please try again after 1 hour",
+    message: "Too many requests, please try again after 1 hour",
     status: 429,
   },
 });

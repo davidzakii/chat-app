@@ -13,7 +13,6 @@ export class GlobalError {
   constructor() {
     effect(() => {
       if (this.errors.error()) {
-        if (this.errors.error()!.errDetails) toast.error(this.errors.error()!.errDetails!);
         toast.error(this.errors.error()!.message);
         this.errors.clear();
       }

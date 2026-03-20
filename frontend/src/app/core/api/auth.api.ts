@@ -4,5 +4,7 @@ export const AUTH_API = {
   login: '/auth/login',
   logout: '/auth/logout',
   google: '/auth/google',
-  check: '/auth/check'
+  check: '/auth/check',
+  forgotPassword: '/auth/forgot-password',
+  resetPassword: (token: string) => `/auth/reset-password/${token}`
 };

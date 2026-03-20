@@ -41,8 +41,20 @@ router.post(
   verifyOTP,
 );
 
-router.post("/forgot-password", requireJson,validate(forgotPasswordUserSchema), forgetPassword);
-router.post("/reset-password/:token", requireJson,validate(resetPasswordUserSchema) ,resetPassword);
+router.post(
+  "/forgot-password",
+  otpLimiter,
+  requireJson,
+  validate(forgotPasswordUserSchema),
+  forgetPassword,
+);
+router.post(
+  "/reset-password/:token",
+  otpLimiter,
+  requireJson,
+  validate(resetPasswordUserSchema),
+  resetPassword,
+);
 
 router.post(
   "/login",

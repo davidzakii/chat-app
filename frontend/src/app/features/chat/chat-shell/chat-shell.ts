@@ -1,10 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, Inject, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  Inject,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { Sidebar } from '../sidebar/sidebar';
 import { ChatWindow } from '../chat-window/chat-window';
 import { MessageInput } from '../message-input/message-input';
 import { MessageService } from '../../../core/services/message.service';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SidebarService } from '../../../core/services/sidebar';
 
 @Component({
   selector: 'app-chat-shell',
@@ -14,6 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatShell implements OnInit {
+  public sidebarService = inject(SidebarService);
   private readonly messages = inject(MessageService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);

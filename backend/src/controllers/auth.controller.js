@@ -2,15 +2,23 @@ import { errorResponse, successResponse } from "../utils/api.responses.js";
 import User from "../models/user.model.js";
 import { generateToken } from "../lib/jwt.js";
 import crypto from "crypto";
-import { sendOTPEmail } from "../lib/nodeEmailer.js";
+import { sendOTPEmail, sendRestPasswordEmail } from "../lib/nodeEmailer.js";
 
 export const signup = async (req, res, next) => {
   try {
     const { email, password, fullName } = req.body;
 
-    const existUser = await User.findOne({ email });
-    if (existUser) {
+    const existUserByEmail = await User.findOne({ email });
+    const existUserByFullName = await User.findOne({ fullName });
+    if (existUserByEmail) {
       return res.status(409).json(errorResponse("Email already exists", 409));
+    }
+    if (existUserByFullName) {
+      return res
+        .status(409)
+        .json(
+          errorResponse("Name already exists, Please enter another name", 409),
+        );
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
@@ -158,9 +166,8 @@ export const forgetPassword = async (req, res) => {
   await user.save();
 
   // In production, send this via email using Nodemailer or SendGrid
-  const resetUrl = `http://localhost:4200/${resetToken}`;
-  console.log(`Reset URL: ${resetUrl}`); // For testing
-  await sendOTPEmail(email, resetUrl);
+  const resetUrl = `http://localhost:4200/reset-password/${resetToken}`;
+  await sendRestPasswordEmail(email, resetUrl);
   res
     .status(200)
     .json(successResponse(null, "Password reset link sent to email"));
