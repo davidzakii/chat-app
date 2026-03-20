@@ -66,7 +66,7 @@ export class ResetPassword {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          toast.success('Password reset successful! Please log in with your new password.');
+          toast.success(res.message);
           this.router.navigate(['/login']);
         },
       });

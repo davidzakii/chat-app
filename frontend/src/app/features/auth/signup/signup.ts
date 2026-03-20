@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { toast } from 'ngx-sonner';
 @Component({
   selector: 'app-signup',
   imports: [ReactiveFormsModule, RouterLink],
@@ -38,7 +38,8 @@ export class Signup {
       })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: (res) => {
+          toast.success(res.message);
           this.router.navigate(['/verify-otp'], {
             queryParams: { email },
           });
