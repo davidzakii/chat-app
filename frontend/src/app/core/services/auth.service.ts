@@ -139,7 +139,8 @@ export class AuthService {
   }
 
   googleLogin() {
-    window.location.href = 'http://localhost:3000/api/auth/google';
+    window.location.href =
+      'https://cuddly-silvia-webdeveloperog-1baa189a.koyeb.app/api/auth/google';
   }
 
   private setLoading(loading: boolean) {
