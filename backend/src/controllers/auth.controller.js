@@ -124,7 +124,7 @@ export const googleCallback = async (req, res) => {
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "development",
-    sameSite: "lax",
+    sameSite: "none",
     maxAge: 24 * 60 * 60 * 1000,
   });
 
@@ -203,6 +203,11 @@ export const resetPassword = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.cookie("token", "", { maxAge: 0 });
+  res.cookie("token", "", {
+    maxAge: 0,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
   res.status(200).json(successResponse(null, "Logged out successfully"));
 };
