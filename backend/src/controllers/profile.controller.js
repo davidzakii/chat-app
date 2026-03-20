@@ -11,20 +11,19 @@ export const updateProfile = async (req, res, next) => {
     if (!fullName && !req.file) {
       return next(new AppError("No data provided", 400));
     }
-    const existUserByFullName = await User.findOne({ fullName });
-    if (existUserByFullName) {
-      return res
-        .status(409)
-        .json(
-          errorResponse("Name already exists, Please enter another name", 409),
-        );
-    }
+
     const user = await User.findById(req.user._id, { password: 0 });
     if (!user) {
       return next(new AppError("User not found", 404));
     }
+    if (fullName && fullName !== user.fullName) {
+      const existUserByFullName = await User.findOne({ fullName });
+      if (existUserByFullName) {
+        return res.status(409).json(errorResponse("Name already exists", 409));
+      }
+      user.fullName = fullName;
+    }
 
-    if (fullName) user.fullName = fullName;
     if (req.file) {
       if (user.profilePicPublicId) {
         await cloudinary.uploader.destroy(user.profilePicPublicId);
@@ -34,7 +33,10 @@ export const updateProfile = async (req, res, next) => {
           const stream = cloudinary.uploader.upload_stream(
             {
               folder: "chatapp",
-              transformation: [{ width: 500, crop: "limit" }],
+              transformation: [
+                { width: 200, height: 200, crop: "thumb", gravity: "face" },
+                { fetch_format: "auto", quality: "auto" }, // لتقليل حجم الصورة وسرعة التحميل
+              ],
             },
             (error, result) => {
               if (error) return reject(error);
