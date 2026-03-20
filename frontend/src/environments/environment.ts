@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.mychatapp.com/api',
+  apiBaseUrl: 'https://cuddly-silvia-webdeveloperog-1baa189a.koyeb.app',
   apiVersion: 'v1'
 };
